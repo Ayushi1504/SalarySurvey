@@ -1,4 +1,6 @@
-### Exercise B
+### Salary Survey 
+
+## Exercise B
 
 To Note
 
