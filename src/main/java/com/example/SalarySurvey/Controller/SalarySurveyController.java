@@ -1,28 +1,36 @@
 package com.example.SalarySurvey.Controller;
 
 import com.example.SalarySurvey.Model.SalarySurvey;
-import com.example.SalarySurvey.Repository.SalarySurveyRespository;
+import com.example.SalarySurvey.Repository.SalarySurveyRepository;
+import com.example.SalarySurvey.Service.ElasticSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/SalarySurveys")
+@RequestMapping("/api")
 public class SalarySurveyController {
+
+
     @Autowired
-    private SalarySurveyRespository repository;
+    private ElasticSearchService elasticSearchService;
+    @GetMapping("/salary_survey")
+    public List<SalarySurvey> getSalarySurvey(
+            @RequestParam(required = false) Float compensation,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false, defaultValue = "asc") String timestamp) {
 
-    @PostMapping
-    public SalarySurvey create(@RequestBody SalarySurvey salarySurvey) {
-        return repository.save(salarySurvey);
+
+        // Add validation here later
+        Sort sort = Sort.by(Sort.Direction.fromString(timestamp), "timestamp");
+        return elasticSearchService.getSalarySurveys(compensation,location,sort);
     }
 
-    @GetMapping
-    public Iterable<SalarySurvey> findAll() {
-        return repository.findAll();
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable String id) {
-        repository.deleteById(id);
+    @GetMapping("/salary_survey/{id}")
+    public SalarySurvey getSurveyById(@PathVariable Long id) {
+        return elasticSearchService.getSurveyById(id);
     }
 }
+
